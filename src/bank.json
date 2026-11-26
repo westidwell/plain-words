@@ -1,0 +1,1655 @@
+{
+"version": "1.0.0",
+"source": "Plain Words phrase bank (public)",
+"never": [],
+"rules": [
+{
+"type": "Word",
+"find": "utilize",
+"change_to": "use",
+"how": "Swap",
+"group": "Stiff word",
+"why": "Plain word does the same job"
+},
+{
+"type": "Word",
+"find": "utilizes",
+"change_to": "uses",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "utilized",
+"change_to": "used",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "utilizing",
+"change_to": "using",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "utilization",
+"change_to": "use",
+"how": "Flag",
+"group": "Stiff word",
+"why": "Often just means use. Keep it when it is a real metric (fleet utilization)"
+},
+{
+"type": "Word",
+"find": "leverage",
+"change_to": "use",
+"how": "Check",
+"group": "Buzzword",
+"why": "Fine as a noun about bargaining power; swap when it means use"
+},
+{
+"type": "Word",
+"find": "leverages",
+"change_to": "uses",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "leveraged",
+"change_to": "used",
+"how": "Check",
+"group": "Buzzword",
+"why": "Leveraged buyout is a real term"
+},
+{
+"type": "Word",
+"find": "leveraging",
+"change_to": "using",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "facilitate",
+"change_to": "help",
+"how": "Check",
+"group": "Stiff word",
+"why": "Sometimes 'run' fits better (facilitate a meeting)"
+},
+{
+"type": "Word",
+"find": "facilitates",
+"change_to": "helps",
+"how": "Check",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "facilitated",
+"change_to": "helped",
+"how": "Check",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "facilitating",
+"change_to": "helping",
+"how": "Check",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "spearhead",
+"change_to": "lead",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "spearheads",
+"change_to": "leads",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "spearheaded",
+"change_to": "led",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "spearheading",
+"change_to": "leading",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "delve into",
+"change_to": "dig into",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": "One of the best-known AI words"
+},
+{
+"type": "Word",
+"find": "delves into",
+"change_to": "digs into",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "delved into",
+"change_to": "dug into",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "delving into",
+"change_to": "digging into",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "delve",
+"change_to": "dig",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "commence",
+"change_to": "start",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "commences",
+"change_to": "starts",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "commenced",
+"change_to": "started",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "prior to",
+"change_to": "before",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "subsequent to",
+"change_to": "after",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "in order to",
+"change_to": "to",
+"how": "Swap",
+"group": "Filler",
+"why": "Two extra words that add nothing"
+},
+{
+"type": "Word",
+"find": "due to the fact that",
+"change_to": "because",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "at this point in time",
+"change_to": "now",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "in the event that",
+"change_to": "if",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "for the purpose of",
+"change_to": "to",
+"how": "Check",
+"group": "Filler",
+"why": "Check the verb after it still reads right"
+},
+{
+"type": "Word",
+"find": "with regard to",
+"change_to": "about",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "with regards to",
+"change_to": "about",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "in terms of",
+"change_to": "for",
+"how": "Flag",
+"group": "Filler",
+"why": "Usually the sentence can be rebuilt without it"
+},
+{
+"type": "Word",
+"find": "endeavor",
+"change_to": "effort",
+"how": "Check",
+"group": "Stiff word",
+"why": "As a verb, use 'try'"
+},
+{
+"type": "Word",
+"find": "myriad",
+"change_to": "many",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "a myriad of",
+"change_to": "many",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "a plethora of",
+"change_to": "lots of",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "plethora of",
+"change_to": "lots of",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "a wide array of",
+"change_to": "many",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "a wide range of",
+"change_to": "many",
+"how": "Check",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "meticulous",
+"change_to": "careful",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "meticulously",
+"change_to": "carefully",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "intricate",
+"change_to": "detailed",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "multifaceted",
+"change_to": "complex",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "nuanced",
+"change_to": "subtle",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": "Say what the nuance is instead"
+},
+{
+"type": "Word",
+"find": "pivotal",
+"change_to": "key",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "crucial",
+"change_to": "key",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "paramount",
+"change_to": "most important",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "bolster",
+"change_to": "strengthen",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "bolsters",
+"change_to": "strengthens",
+"how": "Swap",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "underscore",
+"change_to": "show",
+"how": "Check",
+"group": "Chatbot tell",
+"why": "Fine when it means the _ character"
+},
+{
+"type": "Word",
+"find": "underscores",
+"change_to": "shows",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "underscored",
+"change_to": "showed",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "showcase",
+"change_to": "show",
+"how": "Check",
+"group": "Buzzword",
+"why": "Fine as a noun (a showcase home)"
+},
+{
+"type": "Word",
+"find": "showcases",
+"change_to": "shows",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "showcasing",
+"change_to": "showing",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "embark on",
+"change_to": "start",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "embarks on",
+"change_to": "starts",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "embarking on",
+"change_to": "starting",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "harness",
+"change_to": "use",
+"how": "Check",
+"group": "Buzzword",
+"why": "Fine for a real safety harness"
+},
+{
+"type": "Word",
+"find": "harnessing",
+"change_to": "using",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "elevate",
+"change_to": "improve",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "elevates",
+"change_to": "improves",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "foster",
+"change_to": "build",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "fosters",
+"change_to": "builds",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "fostering",
+"change_to": "building",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "streamline",
+"change_to": "simplify",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "streamlines",
+"change_to": "simplifies",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "streamlined",
+"change_to": "simpler",
+"how": "Check",
+"group": "Buzzword",
+"why": "Past-tense verb may need 'simplified'"
+},
+{
+"type": "Word",
+"find": "streamlining",
+"change_to": "simplifying",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "optimize",
+"change_to": "improve",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "optimizes",
+"change_to": "improves",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "optimizing",
+"change_to": "improving",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "seamless",
+"change_to": "smooth",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "seamlessly",
+"change_to": "smoothly",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "robust",
+"change_to": "strong",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "holistic",
+"change_to": "whole",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "comprehensive",
+"change_to": "full",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "ever-evolving",
+"change_to": "changing",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "ever-changing",
+"change_to": "changing",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "rapidly evolving",
+"change_to": "fast-changing",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "landscape",
+"change_to": "market",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": "Fine when it means actual land or yards"
+},
+{
+"type": "Word",
+"find": "realm",
+"change_to": "area",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "navigate",
+"change_to": "handle",
+"how": "Check",
+"group": "Chatbot tell",
+"why": "Fine for driving directions"
+},
+{
+"type": "Word",
+"find": "navigating",
+"change_to": "handling",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "a testament to",
+"change_to": "proof of",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "testament to",
+"change_to": "proof of",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "serves as",
+"change_to": "is",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "stands as",
+"change_to": "is",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "boasts",
+"change_to": "has",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "ensure that",
+"change_to": "make sure",
+"how": "Check",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "ensures that",
+"change_to": "makes sure",
+"how": "Check",
+"group": "Stiff word",
+"why": ""
+},
+{
+"type": "Word",
+"find": "a deep dive",
+"change_to": "a close look",
+"how": "Swap",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "deep dive",
+"change_to": "close look",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "dive deeper into",
+"change_to": "dig into",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "dive deep into",
+"change_to": "dig into",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "cutting-edge",
+"change_to": "modern",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "state-of-the-art",
+"change_to": "modern",
+"how": "Check",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "hit the ground running",
+"change_to": "start fast",
+"how": "Check",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "thrive in",
+"change_to": "do well in",
+"how": "Check",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "thrives in",
+"change_to": "does well in",
+"how": "Check",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "fast-paced, dynamic environment",
+"change_to": "busy workplace",
+"how": "Check",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "fast-paced environment",
+"change_to": "busy workplace",
+"how": "Check",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "dynamic environment",
+"change_to": "busy workplace",
+"how": "Check",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "fast-paced",
+"change_to": "busy",
+"how": "Check",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Moreover,",
+"change_to": "Also,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Furthermore,",
+"change_to": "Also,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Additionally,",
+"change_to": "Also,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Consequently,",
+"change_to": "So,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Thus,",
+"change_to": "So,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Hence,",
+"change_to": "So,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "That being said,",
+"change_to": "Still,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "With that said,",
+"change_to": "Still,",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "It's worth noting that",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": "Just say the thing"
+},
+{
+"type": "Word",
+"find": "It is worth noting that",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "It's important to note that",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "It is important to note that",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Notably,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Importantly,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Interestingly,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Essentially,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Ultimately,",
+"change_to": "",
+"how": "Check",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "At the end of the day,",
+"change_to": "",
+"how": "Check",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "In conclusion,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "In summary,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "In today's fast-paced world,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": "Classic AI opener"
+},
+{
+"type": "Word",
+"find": "In today's digital age,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "In today's world,",
+"change_to": "",
+"how": "Swap",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Let's dive in.",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Let's dive in!",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "truly",
+"change_to": "",
+"how": "Check",
+"group": "Filler",
+"why": "Usually adds nothing"
+},
+{
+"type": "Word",
+"find": "genuinely",
+"change_to": "",
+"how": "Check",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "I hope this email finds you well.",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "I hope this finds you well.",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "I hope this message finds you well.",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Great question!",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Certainly!",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Absolutely!",
+"change_to": "",
+"how": "Swap",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Don't hesitate to",
+"change_to": "Feel free to",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "do not hesitate to",
+"change_to": "feel free to",
+"how": "Check",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "dynamic",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Say what actually changes or moves"
+},
+{
+"type": "Word",
+"find": "innovative",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Say what is new"
+},
+{
+"type": "Word",
+"find": "transformative",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Say what changes"
+},
+{
+"type": "Word",
+"find": "game-changer",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "game-changing",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "world-class",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Prove it with a fact instead"
+},
+{
+"type": "Word",
+"find": "best-in-class",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Prove it with a fact instead"
+},
+{
+"type": "Word",
+"find": "synergy",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "synergies",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "paradigm",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "ecosystem",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "tapestry",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "journey",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": "Fine for a real trip"
+},
+{
+"type": "Word",
+"find": "embrace",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "unlock",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": "Say what it makes possible"
+},
+{
+"type": "Word",
+"find": "unleash",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "empower",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Say what you let them do"
+},
+{
+"type": "Word",
+"find": "empowers",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "empowering",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "revolutionize",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "resonate with",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "resonates with",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "align with",
+"change_to": "fit",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "stakeholders",
+"change_to": "the people involved",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Name them if you can"
+},
+{
+"type": "Word",
+"find": "actionable insights",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "move the needle",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "value-add",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": ""
+},
+{
+"type": "Word",
+"find": "data-driven",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Say what data and what it drives"
+},
+{
+"type": "Word",
+"find": "results-driven",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "passionate about",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "self-starter",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "go-getter",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "rockstar",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "ninja",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "wear many hats",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "team player",
+"change_to": "",
+"how": "Flag",
+"group": "Job-post cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "incredibly",
+"change_to": "",
+"how": "Flag",
+"group": "Filler",
+"why": "Usually cut it"
+},
+{
+"type": "Word",
+"find": "Overall,",
+"change_to": "",
+"how": "Flag",
+"group": "Filler",
+"why": ""
+},
+{
+"type": "Word",
+"find": "When it comes to",
+"change_to": "",
+"how": "Flag",
+"group": "Filler",
+"why": "Usually the sentence can start with the thing itself"
+},
+{
+"type": "Word",
+"find": "In an era of",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Imagine a world where",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Here's the thing",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Let's dive into",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Feel free to",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "As an AI",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": "Leftover chatbot text"
+},
+{
+"type": "Word",
+"find": "That's the point.",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": "Punchy closer. AI ends paragraphs this way a lot"
+},
+{
+"type": "Word",
+"find": "That's the whole point",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": "Punchy closer"
+},
+{
+"type": "Word",
+"find": "what's next",
+"change_to": "",
+"how": "Flag",
+"group": "Buzzword",
+"why": "Vague. Say what is next"
+},
+{
+"type": "Word",
+"find": "actually",
+"change_to": "",
+"how": "Flag",
+"group": "Filler",
+"why": "Often filler. Keep it only when it marks a real surprise"
+},
+{
+"type": "Word",
+"find": "front-row seat",
+"change_to": "",
+"how": "Flag",
+"group": "Cliche",
+"why": ""
+},
+{
+"type": "Word",
+"find": "Let that sink in",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Word",
+"find": "And honestly,",
+"change_to": "",
+"how": "Flag",
+"group": "Chatbot tell",
+"why": ""
+},
+{
+"type": "Pattern",
+"find": "(?<=[\\w.)\\\"'’”])[ \\t]*—[ \\t]*(?=[\\w(\\\"“'‘])",
+"change_to": ", ",
+"how": "Check",
+"group": "Punctuation",
+"why": "Long dash. AI leans on these. A comma usually works; sometimes a period or colon reads better"
+},
+{
+"type": "Pattern",
+"find": "(?<=[A-Za-z.)\\\"'’”])[ \\t]+–[ \\t]+(?=[A-Za-z(\\\"“'‘])",
+"change_to": ", ",
+"how": "Check",
+"group": "Punctuation",
+"why": "Spaced dash used as a pause. A comma usually works"
+},
+{
+"type": "Pattern",
+"find": "(?i)\\bnot (?:just|only|merely) [^.;:!?\\n]{1,60}?,? but(?: also)?\\b",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "'Not just X, but Y' is a top AI pattern. Say Y plainly"
+},
+{
+"type": "Pattern",
+"find": "(?i)\\b(?:isn't|is not|aren't|are not|wasn't|was not) (?:just |only |merely )?(?:a |an |the )?[^.;:!?\\n]{1,40}?[.;,] *(?:it's|it is|they're|they are|this is|that's)\\b",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "'It isn't X. It's Y' setup. Often fine once; AI uses it a lot"
+},
+{
+"type": "Pattern",
+"find": "(?i)\\b(?:don't|do not|doesn't|does not|didn't) just\\b",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "'Don't just X' setup. Fine once in a while"
+},
+{
+"type": "Pattern",
+"find": "\\bWhether you're [^.;:!?\\n]{1,60}? or [^.;:!?\\n]{1,60}?,",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "'Whether you're X or Y' opener"
+},
+{
+"type": "Pattern",
+"find": "\\bFrom [^.;:!?\\n]{1,40}? to [^.;:!?\\n]{1,40}?,",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "Sweeping 'From X to Y' opener"
+},
+{
+"type": "Pattern",
+"find": "\\b(?:The|Here's the) (?:best|good|real|short|bottom|kicker|catch) (?:part|news|answer|line)?\\s*[?:]",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "Set-up question or colon before the point. Just make the point"
+},
+{
+"type": "Pattern",
+"find": "\\b(?:\\w+(?:ive|ful|ous|ent|ant|al|ic|able|ible)), (?:\\w+(?:ive|ful|ous|ent|ant|al|ic|able|ible)),? and (?:\\w+(?:ive|ful|ous|ent|ant|al|ic|able|ible))\\b",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "Three describing words in a row. AI loves threes; two or one is often stronger"
+},
+{
+"type": "Pattern",
+"find": "!{2,}",
+"change_to": "!",
+"how": "Swap",
+"group": "Punctuation",
+"why": "Double exclamation marks"
+},
+{
+"type": "Pattern",
+"find": "(?i)\\b[\\w'-]+, not (?:just |only |the |a |an )?[\\w'-]+",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "'X, not Y' contrast. AI leans on it; once or twice in a piece is plenty"
+},
+{
+"type": "Pattern",
+"find": "(?m)(?:(?<=[.!?] )|(?<=[.!?]\\*\\* )|(?<=[.!?]\\* )|^)Not [^.!?\\n]{1,30}\\.",
+"change_to": "",
+"how": "Flag",
+"group": "Pattern",
+"why": "Short 'Not X.' fragment for punch. AI does this a lot"
+}
+]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "plain-words",
+  "version": "1.0.0",
+  "description": "A plain-English editor for business writing. Runs entirely in your browser.",
+  "license": "MIT",
+  "private": true,
+  "main": "src/engine.js",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "node build.js",
+    "test": "node test/run.js"
+  }
+}

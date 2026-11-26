@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Plain Words</title>
+<meta name="description" content="A plain-English editor for business writing. Paste a draft; it swaps stiff words for plain ones and marks the rest for you to look at. Your text stays in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%230f766e'/%3E%3Cpath d='M31 12h16v4h-4v30h-4V16h-4v30h-4V32a10 10 0 0 1 0-20z' fill='%23fff'/%3E%3Cpath d='M14 53h36' stroke='%23f2c14e' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Literata:opsz,wght@7..72,400;7..72,500&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a copy editor's desk. Your draft on the left, the marked-up proof on the right, the editor's notes underneath. */
+:root{
+  --bg:#0f1319; --panel:#161b24; --panel-2:#1d2430; --line:#283143; --fg:#e7eaf0; --muted:#8f99ab;
+  --accent:#2fc8b4; --accent-ink:#06211d; --del:#f07f7f; --ins:#62d39d; --chk:#f0c35a; --flag:#b8a0f8;
+  --ui:"Manrope",system-ui,"Segoe UI",Arial,sans-serif; --doc:"Literata",Georgia,"Times New Roman",serif; --num:"JetBrains Mono",ui-monospace,Consolas,monospace;
+  --r:10px; color-scheme:dark;
+}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#eef1f5; --line:#dce1ea; --fg:#151a23; --muted:#5b6577;
+  --accent:#0f766e; --accent-ink:#ffffff; --del:#b3261e; --ins:#0b7a46; --chk:#8f5c00; --flag:#6a3fd0; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f4f5f8; --panel:#ffffff; --panel-2:#eef1f5; --line:#dce1ea; --fg:#151a23; --muted:#5b6577;
+  --accent:#0f766e; --accent-ink:#ffffff; --del:#b3261e; --ins:#0b7a46; --chk:#8f5c00; --flag:#6a3fd0; color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 var(--ui);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px}
+.brand h1{margin:0;font-size:clamp(26px,3.4vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.brand h1 .x{color:var(--del);text-decoration:line-through;text-decoration-thickness:2px;font-weight:600;margin-right:.25em}
+.brand p{margin:6px 0 0;color:var(--muted);max-width:62ch;text-wrap:pretty}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;letter-spacing:.02em;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted);background:var(--panel);white-space:nowrap}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--chk)}
+
+/* score strip */
+.scores{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.score{background:var(--panel);padding:12px 16px;display:grid;gap:2px;min-width:0}
+.score b{font:500 26px/1.1 var(--num);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.score span{color:var(--muted);font-size:12.5px}
+.score.swp b{color:var(--ins)} .score.chk b{color:var(--chk)} .score.flg b{color:var(--flag)}
+.score .arrow{color:var(--muted);font-size:18px;margin:0 4px}
+.meter{height:4px;border-radius:2px;background:var(--panel-2);position:relative;margin-top:6px;overflow:hidden}
+.meter i{position:absolute;inset:0 auto 0 0;border-radius:2px}
+.meter i.b{background:color-mix(in srgb,var(--del) 55%,transparent)} .meter i.a{background:var(--ins)}
+
+/* desk */
+.desk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);display:flex;flex-direction:column;min-width:0;min-height:0}
+.pane-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.pane-head h2{margin:0;font-size:14px;font-weight:700;letter-spacing:.01em}
+.pane-head .meta{color:var(--muted);font-size:12.5px;font-family:var(--num);font-variant-numeric:tabular-nums}
+.spacer{flex:1}
+.btn{border:1px solid var(--line);background:var(--panel-2);border-radius:8px;padding:6px 11px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:color-mix(in srgb,var(--accent) 60%,var(--line))}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn:disabled{opacity:.5;cursor:default}
+.tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--chk);border:1px solid color-mix(in srgb,var(--chk) 45%,transparent);border-radius:5px;padding:1px 6px}
+textarea#draft{flex:1;min-height:360px;resize:vertical;border:0;background:transparent;padding:16px 18px;font:16px/1.7 var(--doc);outline:none}
+textarea#draft::placeholder{color:var(--muted)}
+.tabs{display:inline-flex;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:2px}
+.tabs button{border:0;background:transparent;border-radius:6px;padding:4px 10px;font-size:13px;font-weight:600;color:var(--muted)}
+.tabs button[aria-selected="true"]{background:var(--panel);color:var(--fg);box-shadow:0 0 0 1px var(--line)}
+.proof{flex:1;min-height:360px;max-height:70vh;overflow:auto;padding:16px 18px;font:16px/1.75 var(--doc);white-space:pre-wrap;overflow-wrap:anywhere}
+.proof del{color:var(--del);text-decoration:line-through;text-decoration-thickness:1.5px}
+.proof ins{color:var(--ins);text-decoration:none;font-weight:500;margin-left:2px}
+.proof .m-chk{outline:1px dashed var(--chk);outline-offset:1px;border-radius:3px}
+.proof mark{background:transparent;color:inherit;border-bottom:2px solid var(--flag);padding-bottom:1px}
+.proof [data-i]{cursor:pointer;scroll-margin:80px}
+.proof .pulse{animation:pulse 1.4s ease-out 1}
+@keyframes pulse{0%{background:color-mix(in srgb,var(--accent) 40%,transparent)}100%{background:transparent}}
+.empty{color:var(--muted);font-family:var(--ui);font-size:14px;white-space:normal}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;padding:8px 12px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.legend del{color:var(--del)} .legend ins{color:var(--ins);text-decoration:none;font-weight:600}
+.legend .k-chk{outline:1px dashed var(--chk);border-radius:3px;padding:0 3px} .legend mark{background:transparent;color:inherit;border-bottom:2px solid var(--flag)}
+.note{font-size:12.5px;color:var(--muted)}
+.note.ok{color:var(--ins)} .note.warn{color:var(--chk)}
+
+/* editor's notes */
+.notes{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:16px;align-items:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);min-width:0}
+.card > h2{margin:0;padding:12px 14px;font-size:14px;font-weight:700;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:baseline}
+.card > h2 small{color:var(--muted);font-weight:500;font-family:var(--num)}
+.look{list-style:none;margin:0;padding:0;max-height:520px;overflow:auto}
+.look li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:11px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+.look li:last-child{border-bottom:0}
+.look li:hover{background:var(--panel-2)}
+.look .ln{font:500 12px/1.6 var(--num);color:var(--muted);grid-row:span 3;min-width:3.5ch;text-align:right}
+.look .ctx{font:15px/1.55 var(--doc);overflow-wrap:anywhere}
+.look .ctx mark{background:transparent;color:inherit;border-bottom:2px solid var(--flag)}
+.look .ctx del{color:var(--del)} .look .ctx ins{color:var(--ins);text-decoration:none;font-weight:500;margin-left:2px}
+.look .why{color:var(--muted);font-size:13px}
+.look .try{font-size:13px} .look .try b{color:var(--ins);font-weight:600}
+.badge{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;border-radius:5px;border:1px solid;justify-self:start}
+.badge.chk{color:var(--chk);border-color:color-mix(in srgb,var(--chk) 45%,transparent)}
+.badge.flag{color:var(--flag);border-color:color-mix(in srgb,var(--flag) 45%,transparent)}
+.look .head{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.nothing{padding:14px;color:var(--muted)}
+.side{display:grid;gap:16px;min-width:0}
+.field{display:grid;gap:6px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.field:last-child{border-bottom:0}
+.field label{font-weight:600;font-size:13.5px}
+.field .hint{color:var(--muted);font-size:12.5px}
+.field input[type=text]{background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%}
+.check{display:flex;gap:10px;align-items:flex-start}
+.check input{margin-top:3px;accent-color:var(--accent)}
+details.all{background:var(--panel);border:1px solid var(--line);border-radius:var(--r)}
+details.all summary{padding:12px 14px;font-weight:700;font-size:14px;cursor:pointer}
+details.all summary small{color:var(--muted);font-weight:500;font-family:var(--num)}
+.tbl{overflow-x:auto;border-top:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:7px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+td.n{font-family:var(--num);color:var(--muted);font-variant-numeric:tabular-nums;width:4ch}
+td del{color:var(--del)} td ins{color:var(--ins);text-decoration:none}
+td.why{color:var(--muted)}
+footer{color:var(--muted);font-size:12.5px;display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+footer a{color:var(--accent)}
+@media (max-width:900px){
+  .desk,.notes{grid-template-columns:minmax(0,1fr)}
+  .scores{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .proof{max-height:none}
+  textarea#draft,.proof{min-height:240px}
+  td.why{display:none}
+}
+@media (prefers-reduced-motion:reduce){.proof .pulse{animation:none;outline:2px solid var(--accent)}}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1><span class="x" aria-hidden="true">Utilize</span>Plain Words</h1>
+      <p>A plain-English editor for business writing. Paste a draft and it swaps stiff words for plain ones, then marks the judgment calls for you. Your text stays in this browser.</p>
+    </div>
+    <span class="pill" title="Nothing you paste leaves this page."><span class="dot"></span>Free &middot; open source</span>
+  </header>
+
+  <section class="scores" aria-label="Results">
+    <div class="score swp"><b id="s-changed">0</b><span>changed</span></div>
+    <div class="score chk"><b id="s-checked">0</b><span>changed, worth a look</span></div>
+    <div class="score flg"><b id="s-flagged">0</b><span>flagged, not changed</span></div>
+    <div class="score"><b><span id="s-before">0</span><span class="arrow">&rarr;</span><span id="s-after">0</span></b><span>stiff spots per 100 words</span>
+      <div class="meter" aria-hidden="true"><i class="b" id="m-before"></i><i class="a" id="m-after"></i></div></div>
+  </section>
+
+  <main class="desk">
+    <section class="pane" aria-labelledby="h-draft">
+      <div class="pane-head">
+        <h2 id="h-draft">Your draft</h2>
+        <span class="tag" id="sample-tag" hidden>Sample</span>
+        <span class="meta" id="draft-words">0 words</span>
+        <span class="spacer"></span>
+        <button class="btn" id="b-open" type="button">Open file</button>
+        <button class="btn" id="b-sample" type="button">Sample</button>
+        <button class="btn" id="b-clear" type="button">Clear</button>
+        <input type="file" id="file" accept=".txt,.md,.markdown,text/plain,text/markdown" hidden>
+      </div>
+      <textarea id="draft" spellcheck="true" placeholder="Paste or type your draft here. An email, a proposal, a job post, a LinkedIn update."></textarea>
+      <div class="legend"><span class="note" id="draft-note">Plain Words cleans as you type.</span></div>
+    </section>
+
+    <section class="pane" aria-labelledby="h-proof">
+      <div class="pane-head">
+        <h2 id="h-proof">Proof</h2>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" id="t-marked" aria-selected="true">Marked up</button>
+          <button type="button" role="tab" id="t-clean" aria-selected="false">Clean copy</button>
+        </div>
+        <span class="spacer"></span>
+        <button class="btn primary" id="b-copy" type="button">Copy clean text</button>
+        <button class="btn" id="b-save" type="button" hidden>Save</button>
+      </div>
+      <div class="proof" id="proof" aria-live="polite"></div>
+      <div class="legend" id="legend">
+        <span><del>removed</del> <ins>added</ins></span>
+        <span><span class="k-chk">dashed</span> changed, worth a look</span>
+        <span><mark>underlined</mark> flagged, not changed</span>
+        <span class="spacer"></span>
+        <span class="note" id="copy-note"></span>
+      </div>
+    </section>
+  </main>
+
+  <section class="notes">
+    <div class="card">
+      <h2>Look at these first <small id="look-count"></small></h2>
+      <ul class="look" id="look"></ul>
+    </div>
+    <div class="side">
+      <div class="card">
+        <h2>Settings</h2>
+        <div class="field">
+          <label for="leave">Words to leave alone</label>
+          <input type="text" id="leave" placeholder="Company names, product names, a phrase your boss likes">
+          <span class="hint">Separate with commas. Kept in this browser only.</span>
+        </div>
+        <div class="field">
+          <div class="check"><input type="checkbox" id="quotes" checked><label for="quotes">Leave text inside quote marks alone<br><span class="hint">Quotes are someone else's words.</span></label></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <details class="all" id="all">
+    <summary>Every change <small id="all-count"></small></summary>
+    <div class="tbl"><table><thead><tr><th>Line</th><th>Before</th><th>After</th><th>How</th><th>Why</th></tr></thead><tbody id="all-rows"></tbody></table></div>
+  </details>
+
+
+  <footer>
+    <span>Phrase bank <span id="bank-meta"></span></span>
+    <span>Nothing you type leaves this browser. <a href="https://github.com/westidwell/plain-words">Source on GitHub</a></span>
+  </footer>
+</div>
+
+<script type="application/json" id="bank">{"version":"1.0.0","source":"Plain Words phrase bank (public)","never":[],"rules":[{"type":"Word","find":"utilize","change_to":"use","how":"Swap","group":"Stiff word","why":"Plain word does the same job"},{"type":"Word","find":"utilizes","change_to":"uses","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"utilized","change_to":"used","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"utilizing","change_to":"using","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"utilization","change_to":"use","how":"Flag","group":"Stiff word","why":"Often just means use. Keep it when it is a real metric (fleet utilization)"},{"type":"Word","find":"leverage","change_to":"use","how":"Check","group":"Buzzword","why":"Fine as a noun about bargaining power; swap when it means use"},{"type":"Word","find":"leverages","change_to":"uses","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"leveraged","change_to":"used","how":"Check","group":"Buzzword","why":"Leveraged buyout is a real term"},{"type":"Word","find":"leveraging","change_to":"using","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"facilitate","change_to":"help","how":"Check","group":"Stiff word","why":"Sometimes 'run' fits better (facilitate a meeting)"},{"type":"Word","find":"facilitates","change_to":"helps","how":"Check","group":"Stiff word","why":""},{"type":"Word","find":"facilitated","change_to":"helped","how":"Check","group":"Stiff word","why":""},{"type":"Word","find":"facilitating","change_to":"helping","how":"Check","group":"Stiff word","why":""},{"type":"Word","find":"spearhead","change_to":"lead","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"spearheads","change_to":"leads","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"spearheaded","change_to":"led","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"spearheading","change_to":"leading","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"delve into","change_to":"dig into","how":"Swap","group":"Chatbot tell","why":"One of the best-known AI words"},{"type":"Word","find":"delves into","change_to":"digs into","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"delved into","change_to":"dug into","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"delving into","change_to":"digging into","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"delve","change_to":"dig","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"commence","change_to":"start","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"commences","change_to":"starts","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"commenced","change_to":"started","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"prior to","change_to":"before","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"subsequent to","change_to":"after","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"in order to","change_to":"to","how":"Swap","group":"Filler","why":"Two extra words that add nothing"},{"type":"Word","find":"due to the fact that","change_to":"because","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"at this point in time","change_to":"now","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"in the event that","change_to":"if","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"for the purpose of","change_to":"to","how":"Check","group":"Filler","why":"Check the verb after it still reads right"},{"type":"Word","find":"with regard to","change_to":"about","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"with regards to","change_to":"about","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"in terms of","change_to":"for","how":"Flag","group":"Filler","why":"Usually the sentence can be rebuilt without it"},{"type":"Word","find":"endeavor","change_to":"effort","how":"Check","group":"Stiff word","why":"As a verb, use 'try'"},{"type":"Word","find":"myriad","change_to":"many","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"a myriad of","change_to":"many","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"a plethora of","change_to":"lots of","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"plethora of","change_to":"lots of","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"a wide array of","change_to":"many","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"a wide range of","change_to":"many","how":"Check","group":"Filler","why":""},{"type":"Word","find":"meticulous","change_to":"careful","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"meticulously","change_to":"carefully","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"intricate","change_to":"detailed","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"multifaceted","change_to":"complex","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"nuanced","change_to":"subtle","how":"Flag","group":"Chatbot tell","why":"Say what the nuance is instead"},{"type":"Word","find":"pivotal","change_to":"key","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"crucial","change_to":"key","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"paramount","change_to":"most important","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"bolster","change_to":"strengthen","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"bolsters","change_to":"strengthens","how":"Swap","group":"Stiff word","why":""},{"type":"Word","find":"underscore","change_to":"show","how":"Check","group":"Chatbot tell","why":"Fine when it means the _ character"},{"type":"Word","find":"underscores","change_to":"shows","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"underscored","change_to":"showed","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"showcase","change_to":"show","how":"Check","group":"Buzzword","why":"Fine as a noun (a showcase home)"},{"type":"Word","find":"showcases","change_to":"shows","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"showcasing","change_to":"showing","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"embark on","change_to":"start","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"embarks on","change_to":"starts","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"embarking on","change_to":"starting","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"harness","change_to":"use","how":"Check","group":"Buzzword","why":"Fine for a real safety harness"},{"type":"Word","find":"harnessing","change_to":"using","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"elevate","change_to":"improve","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"elevates","change_to":"improves","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"foster","change_to":"build","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"fosters","change_to":"builds","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"fostering","change_to":"building","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"streamline","change_to":"simplify","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"streamlines","change_to":"simplifies","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"streamlined","change_to":"simpler","how":"Check","group":"Buzzword","why":"Past-tense verb may need 'simplified'"},{"type":"Word","find":"streamlining","change_to":"simplifying","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"optimize","change_to":"improve","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"optimizes","change_to":"improves","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"optimizing","change_to":"improving","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"seamless","change_to":"smooth","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"seamlessly","change_to":"smoothly","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"robust","change_to":"strong","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"holistic","change_to":"whole","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"comprehensive","change_to":"full","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"ever-evolving","change_to":"changing","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"ever-changing","change_to":"changing","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"rapidly evolving","change_to":"fast-changing","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"landscape","change_to":"market","how":"Flag","group":"Chatbot tell","why":"Fine when it means actual land or yards"},{"type":"Word","find":"realm","change_to":"area","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"navigate","change_to":"handle","how":"Check","group":"Chatbot tell","why":"Fine for driving directions"},{"type":"Word","find":"navigating","change_to":"handling","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"a testament to","change_to":"proof of","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"testament to","change_to":"proof of","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"serves as","change_to":"is","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"stands as","change_to":"is","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"boasts","change_to":"has","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"ensure that","change_to":"make sure","how":"Check","group":"Stiff word","why":""},{"type":"Word","find":"ensures that","change_to":"makes sure","how":"Check","group":"Stiff word","why":""},{"type":"Word","find":"a deep dive","change_to":"a close look","how":"Swap","group":"Buzzword","why":""},{"type":"Word","find":"deep dive","change_to":"close look","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"dive deeper into","change_to":"dig into","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"dive deep into","change_to":"dig into","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"cutting-edge","change_to":"modern","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"state-of-the-art","change_to":"modern","how":"Check","group":"Buzzword","why":""},{"type":"Word","find":"hit the ground running","change_to":"start fast","how":"Check","group":"Job-post cliche","why":""},{"type":"Word","find":"thrive in","change_to":"do well in","how":"Check","group":"Job-post cliche","why":""},{"type":"Word","find":"thrives in","change_to":"does well in","how":"Check","group":"Job-post cliche","why":""},{"type":"Word","find":"fast-paced, dynamic environment","change_to":"busy workplace","how":"Check","group":"Job-post cliche","why":""},{"type":"Word","find":"fast-paced environment","change_to":"busy workplace","how":"Check","group":"Job-post cliche","why":""},{"type":"Word","find":"dynamic environment","change_to":"busy workplace","how":"Check","group":"Job-post cliche","why":""},{"type":"Word","find":"fast-paced","change_to":"busy","how":"Check","group":"Job-post cliche","why":""},{"type":"Word","find":"Moreover,","change_to":"Also,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Furthermore,","change_to":"Also,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Additionally,","change_to":"Also,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Consequently,","change_to":"So,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Thus,","change_to":"So,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Hence,","change_to":"So,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"That being said,","change_to":"Still,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"With that said,","change_to":"Still,","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"It's worth noting that","change_to":"","how":"Swap","group":"Filler","why":"Just say the thing"},{"type":"Word","find":"It is worth noting that","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"It's important to note that","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"It is important to note that","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Notably,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Importantly,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Interestingly,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Essentially,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Ultimately,","change_to":"","how":"Check","group":"Filler","why":""},{"type":"Word","find":"At the end of the day,","change_to":"","how":"Check","group":"Filler","why":""},{"type":"Word","find":"In conclusion,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"In summary,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"In today's fast-paced world,","change_to":"","how":"Swap","group":"Filler","why":"Classic AI opener"},{"type":"Word","find":"In today's digital age,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"In today's world,","change_to":"","how":"Swap","group":"Filler","why":""},{"type":"Word","find":"Let's dive in.","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"Let's dive in!","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"truly","change_to":"","how":"Check","group":"Filler","why":"Usually adds nothing"},{"type":"Word","find":"genuinely","change_to":"","how":"Check","group":"Filler","why":""},{"type":"Word","find":"I hope this email finds you well.","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"I hope this finds you well.","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"I hope this message finds you well.","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"Great question!","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"Certainly!","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"Absolutely!","change_to":"","how":"Swap","group":"Chatbot tell","why":""},{"type":"Word","find":"Don't hesitate to","change_to":"Feel free to","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"do not hesitate to","change_to":"feel free to","how":"Check","group":"Chatbot tell","why":""},{"type":"Word","find":"dynamic","change_to":"","how":"Flag","group":"Buzzword","why":"Say what actually changes or moves"},{"type":"Word","find":"innovative","change_to":"","how":"Flag","group":"Buzzword","why":"Say what is new"},{"type":"Word","find":"transformative","change_to":"","how":"Flag","group":"Buzzword","why":"Say what changes"},{"type":"Word","find":"game-changer","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"game-changing","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"world-class","change_to":"","how":"Flag","group":"Buzzword","why":"Prove it with a fact instead"},{"type":"Word","find":"best-in-class","change_to":"","how":"Flag","group":"Buzzword","why":"Prove it with a fact instead"},{"type":"Word","find":"synergy","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"synergies","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"paradigm","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"ecosystem","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"tapestry","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"journey","change_to":"","how":"Flag","group":"Chatbot tell","why":"Fine for a real trip"},{"type":"Word","find":"embrace","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"unlock","change_to":"","how":"Flag","group":"Chatbot tell","why":"Say what it makes possible"},{"type":"Word","find":"unleash","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"empower","change_to":"","how":"Flag","group":"Buzzword","why":"Say what you let them do"},{"type":"Word","find":"empowers","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"empowering","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"revolutionize","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"resonate with","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"resonates with","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"align with","change_to":"fit","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"stakeholders","change_to":"the people involved","how":"Flag","group":"Buzzword","why":"Name them if you can"},{"type":"Word","find":"actionable insights","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"move the needle","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"value-add","change_to":"","how":"Flag","group":"Buzzword","why":""},{"type":"Word","find":"data-driven","change_to":"","how":"Flag","group":"Buzzword","why":"Say what data and what it drives"},{"type":"Word","find":"results-driven","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"passionate about","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"self-starter","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"go-getter","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"rockstar","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"ninja","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"wear many hats","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"team player","change_to":"","how":"Flag","group":"Job-post cliche","why":""},{"type":"Word","find":"incredibly","change_to":"","how":"Flag","group":"Filler","why":"Usually cut it"},{"type":"Word","find":"Overall,","change_to":"","how":"Flag","group":"Filler","why":""},{"type":"Word","find":"When it comes to","change_to":"","how":"Flag","group":"Filler","why":"Usually the sentence can start with the thing itself"},{"type":"Word","find":"In an era of","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"Imagine a world where","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"Here's the thing","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"Let's dive into","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"Feel free to","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"As an AI","change_to":"","how":"Flag","group":"Chatbot tell","why":"Leftover chatbot text"},{"type":"Word","find":"That's the point.","change_to":"","how":"Flag","group":"Chatbot tell","why":"Punchy closer. AI ends paragraphs this way a lot"},{"type":"Word","find":"That's the whole point","change_to":"","how":"Flag","group":"Chatbot tell","why":"Punchy closer"},{"type":"Word","find":"what's next","change_to":"","how":"Flag","group":"Buzzword","why":"Vague. Say what is next"},{"type":"Word","find":"actually","change_to":"","how":"Flag","group":"Filler","why":"Often filler. Keep it only when it marks a real surprise"},{"type":"Word","find":"front-row seat","change_to":"","how":"Flag","group":"Cliche","why":""},{"type":"Word","find":"Let that sink in","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Word","find":"And honestly,","change_to":"","how":"Flag","group":"Chatbot tell","why":""},{"type":"Pattern","find":"(?\u003c=[\\w.)\\\"'’”])[ \\t]*—[ \\t]*(?=[\\w(\\\"“'‘])","change_to":", ","how":"Check","group":"Punctuation","why":"Long dash. AI leans on these. A comma usually works; sometimes a period or colon reads better"},{"type":"Pattern","find":"(?\u003c=[A-Za-z.)\\\"'’”])[ \\t]+–[ \\t]+(?=[A-Za-z(\\\"“'‘])","change_to":", ","how":"Check","group":"Punctuation","why":"Spaced dash used as a pause. A comma usually works"},{"type":"Pattern","find":"(?i)\\bnot (?:just|only|merely) [^.;:!?\\n]{1,60}?,? but(?: also)?\\b","change_to":"","how":"Flag","group":"Pattern","why":"'Not just X, but Y' is a top AI pattern. Say Y plainly"},{"type":"Pattern","find":"(?i)\\b(?:isn't|is not|aren't|are not|wasn't|was not) (?:just |only |merely )?(?:a |an |the )?[^.;:!?\\n]{1,40}?[.;,] *(?:it's|it is|they're|they are|this is|that's)\\b","change_to":"","how":"Flag","group":"Pattern","why":"'It isn't X. It's Y' setup. Often fine once; AI uses it a lot"},{"type":"Pattern","find":"(?i)\\b(?:don't|do not|doesn't|does not|didn't) just\\b","change_to":"","how":"Flag","group":"Pattern","why":"'Don't just X' setup. Fine once in a while"},{"type":"Pattern","find":"\\bWhether you're [^.;:!?\\n]{1,60}? or [^.;:!?\\n]{1,60}?,","change_to":"","how":"Flag","group":"Pattern","why":"'Whether you're X or Y' opener"},{"type":"Pattern","find":"\\bFrom [^.;:!?\\n]{1,40}? to [^.;:!?\\n]{1,40}?,","change_to":"","how":"Flag","group":"Pattern","why":"Sweeping 'From X to Y' opener"},{"type":"Pattern","find":"\\b(?:The|Here's the) (?:best|good|real|short|bottom|kicker|catch) (?:part|news|answer|line)?\\s*[?:]","change_to":"","how":"Flag","group":"Pattern","why":"Set-up question or colon before the point. Just make the point"},{"type":"Pattern","find":"\\b(?:\\w+(?:ive|ful|ous|ent|ant|al|ic|able|ible)), (?:\\w+(?:ive|ful|ous|ent|ant|al|ic|able|ible)),? and (?:\\w+(?:ive|ful|ous|ent|ant|al|ic|able|ible))\\b","change_to":"","how":"Flag","group":"Pattern","why":"Three describing words in a row. AI loves threes; two or one is often stronger"},{"type":"Pattern","find":"!{2,}","change_to":"!","how":"Swap","group":"Punctuation","why":"Double exclamation marks"},{"type":"Pattern","find":"(?i)\\b[\\w'-]+, not (?:just |only |the |a |an )?[\\w'-]+","change_to":"","how":"Flag","group":"Pattern","why":"'X, not Y' contrast. AI leans on it; once or twice in a piece is plenty"},{"type":"Pattern","find":"(?m)(?:(?\u003c=[.!?] )|(?\u003c=[.!?]\\*\\* )|(?\u003c=[.!?]\\* )|^)Not [^.!?\\n]{1,30}\\.","change_to":"","how":"Flag","group":"Pattern","why":"Short 'Not X.' fragment for punch. AI does this a lot"}]}</script>
+<script>/* Plain Words engine (browser and Node).
+   Nothing leaves the page: it takes text and a bank and returns the cleaned text and the list of changes. */
+(function (root) {
+  "use strict";
+  var VERSION = "1.0.0";
+  var W = "\\p{L}\\p{N}_";              // Python's Unicode \w
+  var HOWS = ["Swap", "Check", "Flag"];
+
+  // ------------------------------------------------------------------ Python regex -> JS regex
+  var SYNTAX = "^$\\.*+?()[]{}|/";
+  function pyToJs(src) {
+    var flags = "gu";
+    var m = /^\(\?([aiLmsux]+)\)/.exec(src);
+    if (m) {
+      src = src.slice(m[0].length);
+      if (m[1].indexOf("i") >= 0) flags += "i";
+      if (m[1].indexOf("m") >= 0) flags += "m";
+      if (m[1].indexOf("s") >= 0) flags += "s";
+    }
+    var out = "", inClass = false, i = 0;
+    var bWord = "(?:(?<=[" + W + "])(?![" + W + "])|(?<![" + W + "])(?=[" + W + "]))";
+    var bNot = "(?:(?<=[" + W + "])(?=[" + W + "])|(?<![" + W + "])(?![" + W + "]))";
+    while (i < src.length) {
+      var c = src[i];
+      if (c === "\\" && i + 1 < src.length) {
+        var n = src[i + 1];
+        i += 2;
+        if (n === "w") { out += inClass ? W : "[" + W + "]"; continue; }
+        if (n === "W") { out += inClass ? "\\P{L}" : "[^" + W + "]"; continue; }
+        if (n === "b" && !inClass) { out += bWord; continue; }
+        if (n === "B" && !inClass) { out += bNot; continue; }
+        if (n === "A") { out += "^"; continue; }
+        if (n === "Z") { out += "$"; continue; }
+        if (/[0-9A-Za-z]/.test(n)) { out += "\\" + n; continue; }   // \s \d \n \t \u etc.
+        if (SYNTAX.indexOf(n) >= 0 || (inClass && n === "-")) { out += "\\" + n; continue; }
+        out += n;                                                 // \' \" \, ... are plain in JS
+        continue;
+      }
+      if (inClass) {
+        if (c === "]") inClass = false;
+        out += c; i++; continue;
+      }
+      if (c === "[") {
+        inClass = true; out += c; i++;
+        if (src[i] === "^") { out += "^"; i++; }
+        if (src[i] === "]") { out += "\\]"; i++; }
+        continue;
+      }
+      if (c === "(" && src.slice(i, i + 4) === "(?P<") { out += "(?<"; i += 4; continue; }
+      if (c === "(" && src.slice(i, i + 4) === "(?P=") {
+        var end = src.indexOf(")", i);
+        out += "\\k<" + src.slice(i + 4, end) + ">"; i = end + 1; continue;
+      }
+      if (c === "$" && flags.indexOf("m") < 0) { out += "(?=\\n?$)"; i++; continue; }
+      out += c; i++;
+    }
+    return new RegExp(out, flags);
+  }
+
+  function escJs(ch) { return SYNTAX.indexOf(ch) >= 0 ? "\\" + ch : ch; }
+
+  function compileRule(r) {
+    if (r.kind === "Pattern") return pyToJs(r.find);
+    var text = r.find.trim().replace(/\s+/g, " ");
+    var parts = [];
+    for (var ch of text) {
+      if (ch === " ") parts.push("\\s+");
+      else if (ch === "-" || ch === "‐" || ch === "‑") parts.push("[\\-\\u2010\\u2011\\s]");
+      else if (ch === "'" || ch === "’") parts.push("['\\u2019]");
+      else parts.push(escJs(ch));
+    }
+    var isW = new RegExp("^[" + W + "]", "u");
+    var chars = Array.from(text);
+    var left = isW.test(chars[0]) ? "(?<![" + W + "\\-])" : "";
+    var right = isW.test(chars[chars.length - 1]) ? "(?![" + W + "\\-])" : "";
+    return new RegExp(left + parts.join("") + right, "giu");
+  }
+
+  // ------------------------------------------------------------------ bank
+  function cap1(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : s; }
+
+  function loadBank(json) {
+    var rules = [], never = [], problems = [];
+    var list = Array.isArray(json) ? json : (json.rules || []);
+    list.forEach(function (x, idx) {
+      var row = idx + 2;
+      var g = function (k) { var v = x[k]; if (v === undefined) v = x[k.replace(" ", "_")]; return v === undefined || v === null ? "" : String(v); };
+      var on = (g("on") || "Y").trim().toUpperCase().slice(0, 1) || "Y";
+      if (on === "N") return;
+      var kind = cap1(g("type").trim() || "Word");
+      if (kind === "Never") { never.push(g("find").trim()); return; }
+      var find = kind === "Pattern" ? g("find") : g("find").trim();
+      var change = kind === "Pattern" ? g("change to") : g("change to").trim();
+      var how = cap1(g("how").trim() || "Swap");
+      if (!find) return;
+      if (HOWS.indexOf(how) < 0) { problems.push("Row " + row + ": How must be Swap, Check or Flag; treated as Flag"); how = "Flag"; }
+      rules.push({ kind: kind, find: find, change: change, how: how, group: g("group").trim(), why: g("why").trim(), row: row, regex: null });
+    });
+    (json.never || []).forEach(function (t) { if (String(t).trim()) never.push(String(t).trim()); });
+    var ok = [];
+    rules.forEach(function (r) {
+      try { r.regex = compileRule(r); ok.push(r); }
+      catch (e) { problems.push("Row " + r.row + ": pattern skipped, it doesn't work (" + e.message + ")"); }
+    });
+    return { rules: ok, never: never, problems: problems };
+  }
+
+  // ------------------------------------------------------------------ engine
+  var PROTECT = [/```[\s\S]*?```/gu, /`[^`\n]+`/gu, /https?:\/\/[^\s)>\]]+/gu,
+    new RegExp("(?:(?<=[" + W + "])(?![" + W + "])|(?<![" + W + "])(?=[" + W + "]))www\\.[^\\s)>\\]]+", "gu"),
+    new RegExp("[" + W + ".+\\-]+@[" + W + "\\-]+\\.[" + W + ".\\-]+", "gu"),
+    /\]\([^)\n]*\)/gu, /<[^<>\n]+>/gu];
+  var QUOTES = [/"[^"\n]{1,300}"/gu, /“[^”\n]{1,300}”/gu];
+
+  function spansOf(rx, text) {
+    var out = [];
+    for (var m of text.matchAll(rx)) out.push([m.index, m.index + m[0].length]);
+    return out;
+  }
+
+  function protectedSpans(text, never, quotes, extra) {
+    var spans = (extra || []).slice();
+    PROTECT.concat(quotes ? QUOTES : []).forEach(function (rx) { spans = spans.concat(spansOf(rx, text)); });
+    never.forEach(function (term) {
+      if (!term) return;
+      var esc = Array.from(term).map(escJs).join("");
+      spans = spans.concat(spansOf(new RegExp("(?<![" + W + "])" + esc + "(?![" + W + "])", "giu"), text));
+    });
+    spans.sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+    return spans;
+  }
+
+  function overlaps(spans, s, e) {
+    for (var i = 0; i < spans.length; i++) if (spans[i][0] < e && s < spans[i][1]) return true;
+    return false;
+  }
+
+  function scan(text, rules, never, quotes, extra, singleLine) {
+    var prot = protectedSpans(text, never, quotes, extra);
+    var cands = [], flags = [];
+    rules.forEach(function (r) {
+      r.regex.lastIndex = 0;
+      for (var m of text.matchAll(r.regex)) {
+        var s = m.index, e = s + m[0].length;
+        if (s === e || overlaps(prot, s, e)) continue;
+        if (singleLine && m[0].indexOf("\n") >= 0) continue;
+        var h = { s: s, e: e, rule: r, m: m, text: m[0], repl: null, cap: false };
+        (r.how === "Flag" ? flags : cands).push(h);
+      }
+    });
+    cands.sort(function (a, b) { return (b.e - b.s) - (a.e - a.s) || a.rule.row - b.rule.row; });
+    var chosen = [];
+    cands.forEach(function (h) {
+      if (!chosen.some(function (c) { return c.s < h.e && h.s < c.e; })) chosen.push(h);
+    });
+    chosen.sort(function (a, b) { return a.s - b.s; });
+    var taken = chosen.map(function (c) { return [c.s, c.e]; });
+    var seen = {}, kept = [];
+    flags.slice().sort(function (a, b) { return a.s - b.s || (b.e - b.s) - (a.e - a.s); }).forEach(function (f) {
+      var key = f.s + ":" + f.e;
+      if (overlaps(taken, f.s, f.e) || seen[key] || kept.some(function (k) { return k.s <= f.s && f.e <= k.e; })) return;
+      seen[key] = 1;
+      kept.push(f);
+    });
+    return { chosen: chosen, flags: kept, prot: prot };
+  }
+
+  var isAlpha = function (c) { return /\p{L}/u.test(c); };
+  var isUpper = function (c) { return c !== c.toLowerCase(); };
+  var isLower = function (c) { return c !== c.toUpperCase(); };
+
+  function casing(repl, matched) {
+    if (!repl) return repl;
+    var letters = Array.from(matched).filter(isAlpha);
+    if (letters.length > 1 && letters.every(function (c) { return isUpper(c) && !isLower(c); })) return repl.toUpperCase();
+    var first = letters[0] || "";
+    var r = Array.from(repl);
+    var k = r.findIndex(isAlpha);
+    if (k < 0) return repl;
+    if (first && isUpper(first)) { r[k] = r[k].toUpperCase(); return r.join(""); }
+    if (first && isLower(first)) { r[k] = r[k].toLowerCase(); return r.join(""); }
+    return repl;
+  }
+
+  var LINE_PREFIX = /^[ \t]*(?:[-*+][ \t]+|\d+[.)][ \t]+|#{1,6}[ \t]+|>[ \t]*)?(?:\*\*|__|\*|_)?[ \t]*(?=\n?$)/;
+
+  function atSentenceStart(text, pos) {
+    var i = pos;
+    while (i > 0 && " \t".indexOf(text[i - 1]) >= 0) i--;
+    if (i === 0 || "\r\n".indexOf(text[i - 1]) >= 0) return true;
+    var j = i;
+    while (j > 0 && "\"'”’)*_".indexOf(text[j - 1]) >= 0) j--;
+    if (j > 0 && ".!?".indexOf(text[j - 1]) >= 0) return true;
+    var ls = Math.max(text.lastIndexOf("\n", pos - 1), text.lastIndexOf("\r", pos - 1)) + 1;
+    if (pos === 0) ls = 0;
+    return LINE_PREFIX.test(text.slice(ls, pos));
+  }
+
+  function needsAn(word) {
+    var w = word.toLowerCase();
+    if (["hour", "honest", "honor", "heir"].some(function (p) { return w.indexOf(p) === 0; })) return true;
+    if (["uni", "use", "usu", "uti", "ura", "eu", "one", "once", "ewe"].some(function (p) { return w.indexOf(p) === 0; })) return false;
+    return w.length > 0 && "aeiou".indexOf(w[0]) >= 0;
+  }
+
+  var ARTICLE = new RegExp("(?<![" + W + "'])(an|a)([ \\t]+)(?=\\n?$)", "iu");
+
+  function fixArticle(text, ss, nextWord) {
+    var m = ARTICLE.exec(text.slice(Math.max(0, ss - 6), ss));
+    if (!m || !nextWord) return null;
+    var art = m[1], gap = m[2];
+    var want = needsAn(nextWord) ? "an" : "a";
+    if (art.toLowerCase() === want) return null;
+    var fixed = (art.length > 1 || (isUpper(art) && !isLower(art))) ? casing(want, art) : want;
+    if (isUpper(art[0])) fixed = cap1(want);
+    return [ss - m[0].length, fixed + gap];
+  }
+
+  function at(rx, text, pos) { rx.lastIndex = pos; return rx.exec(text); }
+  var LOWER_WORD = new RegExp("[a-z][" + W + "'\\u2019\\-]*", "uy");
+  var NEXT_WORD = new RegExp("[ \\t]*([A-Za-z][" + W + "'\\u2019\\-]*)", "uy");
+  var NEXT_WORD_R = new RegExp("^[ \\t]*([A-Za-z][" + W + "'\\u2019\\-]*)", "u");
+
+  function expand(m, tpl) {
+    return tpl.replace(/\\(?:g<([^>]+)>|(\d{1,2})|(.))/g, function (_, g, d, o) {
+      if (g !== undefined) { var v = /^\d+$/.test(g) ? m[+g] : (m.groups || {})[g]; return v || ""; }
+      if (d !== undefined) return m[+d] || "";
+      return o === "n" ? "\n" : o === "t" ? "\t" : o === "\\" ? "\\" : "\\" + o;
+    });
+  }
+
+  function planEdits(text, chosen, prot) {
+    var edits = [], starts = {};
+    chosen.forEach(function (h) { starts[h.s] = h; });
+    chosen.forEach(function (h) {
+      var r = h.rule, repl;
+      if (r.kind === "Pattern") repl = r.change ? expand(h.m, r.change) : "";
+      else repl = casing(r.change, h.text);
+      var ss = h.s, ee = h.e, m, fix;
+      var last = edits.length ? edits[edits.length - 1] : null;
+      if (repl === "" && r.kind === "Word") {
+        if (atSentenceStart(text, h.s)) {
+          while (ee < text.length && " \t".indexOf(text[ee]) >= 0) ee++;
+          var nxt = starts[ee];
+          if (nxt !== undefined) nxt.cap = true;
+          else {
+            m = at(LOWER_WORD, text, ee);
+            if (m && !overlaps(prot, ee, ee + m[0].length)) {
+              repl = m[0][0].toUpperCase() + m[0].slice(1);
+              ee += m[0].length;
+            }
+          }
+        } else {
+          var prevEnd = last ? last[1] : -1;
+          if (h.s > 0 && " \t".indexOf(text[h.s - 1]) >= 0 && (ee >= text.length || " \t,.;:!?)\r\n".indexOf(text[ee]) >= 0)) {
+            if (h.s - 1 >= prevEnd) ss -= 1;
+            else if (ee < text.length && " \t".indexOf(text[ee]) >= 0) ee += 1;
+          } else if (prevEnd === h.s && /[ \t]$/.test(last[2]) && ee < text.length && " \t".indexOf(text[ee]) >= 0) {
+            ee += 1;
+          }
+          m = at(NEXT_WORD, text, ee);
+          fix = fixArticle(text, ss, m ? m[1] : "");
+          if (fix && (!last || fix[0] >= last[1])) { ss = fix[0]; repl = fix[1].replace(/[ \t]+$/, ""); }
+        }
+      } else if (repl) {
+        m = NEXT_WORD_R.exec(repl);
+        fix = fixArticle(text, ss, m ? m[1] : "");
+        if (fix && (!last || fix[0] >= last[1])) { ss = fix[0]; repl = fix[1] + repl; }
+      }
+      if (h.cap && repl) {
+        var rr = Array.from(repl), k = rr.findIndex(isAlpha);
+        if (k >= 0) { rr[k] = rr[k].toUpperCase(); repl = rr.join(""); }
+      }
+      if (last && ss < last[1]) ss = Math.max(ss, last[1]);
+      h.repl = repl;
+      edits.push([ss, ee, repl, h]);
+    });
+    return edits;
+  }
+
+  function applyEdits(text, edits) {
+    var out = [], lastEnd = 0;
+    edits.forEach(function (e) { out.push(text.slice(lastEnd, e[0]), e[2]); lastEnd = e[1]; });
+    out.push(text.slice(lastEnd));
+    return out.join("");
+  }
+
+  var WORDS_RX = new RegExp("[A-Za-z0-9][" + W + "'\\u2019\\-]*", "gu");
+  function words(text) { var n = 0; for (var _ of text.matchAll(WORDS_RX)) n++; return n; }
+
+  var WORD = /[A-Za-z][A-Za-z'’]*/g;
+  function lw(s) { return (s.match(WORD) || []).map(function (w) { return w.toLowerCase(); }); }
+
+  function guardRepeats(text, edits) {
+    var kept = [], dropped = [], tail = "", lastEnd = 0;
+    edits.forEach(function (ed) {
+      var ss = ed[0], ee = ed[1], repl = ed[2], h = ed[3];
+      var rw = lw(repl), ow = lw(text.slice(ss, ee));
+      var prev = lw((tail + text.slice(lastEnd, ss)).slice(-60));
+      var nxt = lw(text.slice(ee, ee + 60));
+      var clash = null;
+      if (rw.length && prev.length && prev[prev.length - 1] === rw[0] && rw[0].length > 2 && (!ow.length || ow[0] !== rw[0])) clash = rw[0];
+      else if (rw.length && nxt.length && nxt[0] === rw[rw.length - 1] && rw[rw.length - 1].length > 2 && (!ow.length || ow[ow.length - 1] !== rw[rw.length - 1])) clash = rw[rw.length - 1];
+      if (clash) {
+        var r = h.rule;
+        h.rule = { kind: r.kind, find: r.find, change: r.change, how: "Flag", group: r.group, row: r.row, regex: r.regex,
+          why: ("Not changed: swapping in '" + clash + "' would put it twice in a row. " + r.why).trim() };
+        dropped.push(h);
+        return;
+      }
+      tail = (tail + text.slice(lastEnd, ss) + repl).slice(-60);
+      lastEnd = ee;
+      kept.push(ed);
+    });
+    return { kept: kept, dropped: dropped };
+  }
+
+  function round2(x) { return Math.round((x + Number.EPSILON) * 100) / 100; }
+
+  function cleanText(text, bank, opts) {
+    opts = opts || {};
+    var quotes = opts.quotes !== false, never = bank.never.concat(opts.never || []);
+    var sc = scan(text, bank.rules, never, quotes, opts.extra, opts.singleLine);
+    var edits = planEdits(text, sc.chosen, sc.prot);
+    var g = guardRepeats(text, edits);
+    edits = g.kept;
+    var flags = sc.flags;
+    if (g.dropped.length) flags = flags.concat(g.dropped).sort(function (a, b) { return a.s - b.s; });
+    var after = applyEdits(text, edits);
+    var sc2 = scan(after, bank.rules, never, quotes, [], opts.singleLine);
+    var n = Math.max(words(text), 1);
+    return {
+      before: text, after: after, edits: edits, flags: flags, words: words(text),
+      changed: edits.filter(function (e) { return e[3].rule.how === "Swap"; }).length,
+      checked: edits.filter(function (e) { return e[3].rule.how === "Check"; }).length,
+      flagged: flags.length,
+      per100_before: round2((sc.chosen.length + sc.flags.length) * 100 / n),
+      per100_after: round2((sc2.chosen.length + sc2.flags.length) * 100 / Math.max(words(after), 1)),
+      left_after: sc2.chosen.length + sc2.flags.length
+    };
+  }
+
+  function lineIndex(text) {
+    var nl = []; for (var i = 0; i < text.length; i++) if (text.charCodeAt(i) === 10) nl.push(i);
+    return function (pos) { var lo = 0, hi = nl.length; while (lo < hi) { var mid = (lo + hi) >> 1; if (nl[mid] < pos) lo = mid + 1; else hi = mid; } return lo + 1; };
+  }
+
+  function snippet(text, s, e, pad) {
+    pad = pad || 50;
+    var a = Math.max(0, s - pad), b = Math.min(text.length, e + pad);
+    if (s - pad > 0) { var sp = text.lastIndexOf(" ", s - pad + 9); if (sp >= a) a = sp + 1; }
+    var left = (a > 0 ? "..." : "") + text.slice(a, s), right = text.slice(e, b) + (b < text.length ? "..." : "");
+    return [left.replace(/\n/g, " "), text.slice(s, e).replace(/\n/g, " "), right.replace(/\n/g, " ")];
+  }
+
+  /** Every change and flag in reading order, for the page to show. */
+  function items(res) {
+    var t = res.before, out = [], lineOf = lineIndex(t);
+    res.edits.forEach(function (ed) {
+      var h = ed[3];
+      out.push({ kind: h.rule.how, pos: ed[0], end: ed[1], before: t.slice(ed[0], ed[1]), after: ed[2], group: h.rule.group, why: h.rule.why, row: h.rule.row, line: lineOf(ed[0]), context: snippet(t, ed[0], ed[1]) });
+    });
+    res.flags.forEach(function (f) {
+      out.push({ kind: "Flag", pos: f.s, end: f.e, before: f.text, after: f.rule.change, group: f.rule.group, why: f.rule.why, row: f.rule.row, line: lineOf(f.s), context: snippet(t, f.s, f.e) });
+    });
+    out.sort(function (a, b) { return a.pos - b.pos; });
+    return out;
+  }
+
+  var api = { VERSION: VERSION, loadBank: loadBank, cleanText: cleanText, items: items, words: words, pyToJs: pyToJs };
+  if (typeof module !== "undefined" && module.exports) module.exports = api;
+  else root.PlainWords = api;
+})(typeof window !== "undefined" ? window : this);
+</script>
+<script>
+(function () {
+  "use strict";
+  // Off. Set to a URL to receive one small record of counts per visit (never any text) via navigator.sendBeacon.
+  var SITE_TRACKING_URL = null;
+
+  var PW = window.PlainWords;
+  var BANK = PW.loadBank(JSON.parse(document.getElementById("bank").textContent));
+  var $ = function (id) { return document.getElementById(id); };
+  var store = {
+    get: function (k, d) { try { var v = localStorage.getItem("pw." + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set: function (k, v) { try { localStorage.setItem("pw." + k, JSON.stringify(v)); } catch (e) {} }
+  };
+  var SAMPLE = "Hi Dana,\n\nI hope this email finds you well. I wanted to reach out to provide a comprehensive update on the warehouse move.\n\nAdditionally, our team has been working tirelessly to streamline the receiving process. Moving forward, we will leverage the new scanners to facilitate faster check-in — a game-changer for the dock crew. It's not just a new tool, it's a new way of working.\n\nIn order to ensure a seamless transition, we will utilize a phased approach. Whether you're on the day shift or the night shift, the plan has a role for you. Furthermore, the robust training program will empower every team member to hit the ground running.\n\nPlease don't hesitate to reach out if you have any questions!!\n\nBest regards,\nMarcus";
+
+  var text = "", res = null, list = [], tab = "marked", how = "type", isSample = false, fileExt = "txt";
+
+  // ------------------------------------------------------------ usage counts (never text; off unless SITE_TRACKING_URL is set)
+  var U = (function () {
+    var doc = { v: PW.VERSION, started: new Date().toISOString(), last: null, day: localDay(new Date()),
+      device: matchMedia("(max-width: 700px)").matches ? "phone" : "desktop",
+      counts: { open: 1, clean: 0, paste: 0, file: 0, sample: 0, copy: 0, save_copy: 0, save_report: 0, docx_try: 0 },
+      words: 0, changed: 0, checked: 0, flagged: 0, per100_before_sum: 0, per100_after_sum: 0 };
+    var dirty = true;
+    function flush() {
+      if (!SITE_TRACKING_URL || !dirty) return;
+      dirty = false; doc.last = new Date().toISOString();
+      try { navigator.sendBeacon(SITE_TRACKING_URL, JSON.stringify(doc)); } catch (e) {}
+    }
+    function bump(k) { doc.counts[k] = (doc.counts[k] || 0) + 1; dirty = true; }
+    function cleaned(r) {
+      doc.counts.clean++; doc.words += r.words; doc.changed += r.changed; doc.checked += r.checked; doc.flagged += r.flagged;
+      doc.per100_before_sum += r.per100_before; doc.per100_after_sum += r.per100_after; dirty = true;
+    }
+    function start() {
+      addEventListener("pagehide", flush);
+      document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flush(); });
+    }
+    return { start: start, bump: bump, cleaned: cleaned };
+  })();
+
+  function localDay(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+
+
+  // ------------------------------------------------------------ cleaning
+  function leaveList() { return $("leave").value.split(",").map(function (s) { return s.trim(); }).filter(Boolean); }
+
+  var lastCounted = null, countTimer = null;
+  function run() {
+    text = $("draft").value;
+    res = text.trim() ? PW.cleanText(text, BANK, { quotes: $("quotes").checked, never: leaveList() }) : null;
+    list = res ? PW.items(res) : [];
+    render();
+    if (res && !isSample) {
+      clearTimeout(countTimer);
+      countTimer = setTimeout(function () { if (text !== lastCounted && res) { lastCounted = text; U.cleaned(res); } }, how === "type" ? 5000 : 0);
+    }
+  }
+  var debounce = null;
+  function soon() { clearTimeout(debounce); debounce = setTimeout(run, text.length > 60000 ? 600 : 220); }
+
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+  function render() {
+    var n = res ? res.words : 0;
+    $("draft-words").textContent = PW.words(text).toLocaleString() + " words";
+    $("s-changed").textContent = res ? res.changed : 0;
+    $("s-checked").textContent = res ? res.checked : 0;
+    $("s-flagged").textContent = res ? res.flagged : 0;
+    var b = res ? res.per100_before : 0, a = res ? res.per100_after : 0, top = Math.max(b, a, 10);
+    $("s-before").textContent = b.toFixed(1); $("s-after").textContent = a.toFixed(1);
+    $("m-before").style.width = (b / top * 100) + "%"; $("m-after").style.width = (a / top * 100) + "%";
+    $("sample-tag").hidden = !isSample;
+    $("b-copy").disabled = !res;
+    var save = $("b-save"); save.disabled = !res;
+
+    // proof
+    var proof = $("proof"); proof.textContent = "";
+    if (!res) {
+      proof.appendChild(el("p", "empty", "Paste or type a draft on the left. Plain Words crosses out what it changes, writes in the plain word, and underlines what needs your judgment."));
+    } else if (tab === "clean") {
+      proof.textContent = res.after;
+    } else {
+      var t = res.before, last = 0, frag = document.createDocumentFragment();
+      list.forEach(function (it, i) {
+        if (it.pos < last) return;
+        frag.appendChild(document.createTextNode(t.slice(last, it.pos)));
+        var tip = (it.why || it.group || "").trim();
+        if (it.kind === "Flag") {
+          var m = el("mark", null, it.before); m.dataset.i = i;
+          m.title = "Flagged, not changed. " + tip + (it.after ? " Try: " + it.after : ""); frag.appendChild(m);
+        } else {
+          var s = el("span", it.kind === "Check" ? "m-chk" : "m-swp"); s.dataset.i = i;
+          s.title = (it.kind === "Check" ? "Changed, worth a look. " : "Changed. ") + tip;
+          if (it.before) s.appendChild(el("del", null, it.before));
+          if (it.after) s.appendChild(el("ins", null, it.after));
+          frag.appendChild(s);
+        }
+        last = it.end;
+      });
+      frag.appendChild(document.createTextNode(t.slice(last)));
+      proof.appendChild(frag);
+    }
+
+    // look at these
+    var look = $("look"); look.textContent = "";
+    var todo = list.map(function (it, i) { return [it, i]; }).filter(function (p) { return p[0].kind !== "Swap"; });
+    $("look-count").textContent = res ? todo.length : "";
+    if (!res) look.appendChild(el("li", "nothing", "Judgment calls show up here."));
+    else if (!todo.length) look.appendChild(el("li", "nothing", "Nothing to look at. Every change was a safe swap."));
+    todo.forEach(function (p) {
+      var it = p[0], li = el("li"); li.dataset.i = p[1]; li.tabIndex = 0;
+      li.appendChild(el("span", "ln", "L" + it.line));
+      var head = el("div", "head");
+      head.appendChild(el("span", "badge " + (it.kind === "Check" ? "chk" : "flag"), it.kind === "Check" ? "Changed" : "Not changed"));
+      li.appendChild(head);
+      var ctx = el("div", "ctx");
+      ctx.appendChild(document.createTextNode(it.context[0]));
+      if (it.kind === "Check") { ctx.appendChild(el("del", null, it.before)); if (it.after) ctx.appendChild(el("ins", null, it.after)); }
+      else ctx.appendChild(el("mark", null, it.context[1]));
+      ctx.appendChild(document.createTextNode(it.context[2]));
+      li.appendChild(ctx);
+      var why = el("div", "why", it.why || it.group);
+      if (it.kind === "Flag" && it.after) { var tr = el("div", "try"); tr.appendChild(document.createTextNode("Try: ")); tr.appendChild(el("b", null, it.after)); why.appendChild(tr); }
+      li.appendChild(why);
+      look.appendChild(li);
+    });
+
+    // every change
+    var rows = $("all-rows"); rows.textContent = "";
+    var changes = list.filter(function (it) { return it.kind !== "Flag"; });
+    $("all-count").textContent = res ? "(" + changes.length + ")" : "";
+    changes.forEach(function (it) {
+      var tr = el("tr");
+      tr.appendChild(el("td", "n", it.line));
+      var b1 = el("td"); b1.appendChild(el("del", null, it.before)); tr.appendChild(b1);
+      var a1 = el("td"); a1.appendChild(el("ins", null, it.after || "(removed)")); tr.appendChild(a1);
+      tr.appendChild(el("td", null, it.kind === "Check" ? "Check" : "Swap"));
+      tr.appendChild(el("td", "why", it.why || it.group));
+      rows.appendChild(tr);
+    });
+  }
+
+  function jump(i) {
+    if (tab !== "marked") setTab("marked");
+    var m = $("proof").querySelector('[data-i="' + i + '"]');
+    if (!m) return;
+    m.scrollIntoView({ block: "center", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    m.classList.remove("pulse"); void m.offsetWidth; m.classList.add("pulse");
+  }
+  $("look").addEventListener("click", function (e) { var li = e.target.closest("li[data-i]"); if (li) jump(li.dataset.i); });
+  $("look").addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { var li = e.target.closest("li[data-i]"); if (li) { e.preventDefault(); jump(li.dataset.i); } } });
+
+  function setTab(t) {
+    tab = t;
+    $("t-marked").setAttribute("aria-selected", t === "marked");
+    $("t-clean").setAttribute("aria-selected", t === "clean");
+    render();
+  }
+  $("t-marked").addEventListener("click", function () { setTab("marked"); });
+  $("t-clean").addEventListener("click", function () { setTab("clean"); });
+
+  // ------------------------------------------------------------ input
+  var draft = $("draft");
+  draft.addEventListener("input", function () {
+    if (isSample) { isSample = false; }
+    store.set("draft", draft.value); text = draft.value; soon();
+  });
+  draft.addEventListener("paste", function () { how = "paste"; U.bump("paste"); setTimeout(function () { how = "type"; }, 50); });
+  $("b-sample").addEventListener("click", function () { loadSample(); U.bump("sample"); });
+  $("b-clear").addEventListener("click", function () { draft.value = ""; isSample = false; store.set("draft", ""); run(); draft.focus(); });
+  $("b-open").addEventListener("click", function () { $("file").click(); });
+  $("file").addEventListener("change", function () {
+    var f = this.files && this.files[0]; this.value = "";
+    if (!f) return;
+    var ext = (f.name.split(".").pop() || "").toLowerCase();
+    if (ext === "docx") { U.bump("docx_try"); note("Word files aren't supported here. Paste the text instead.", "warn"); return; }
+    if (f.size > 5 * 1024 * 1024) { note("That file is over 5 MB. Paste the part you want cleaned.", "warn"); return; }
+    var rd = new FileReader();
+    rd.onload = function () {
+      draft.value = String(rd.result).replace(/^﻿/, ""); isSample = false; how = "file"; fileExt = ext === "md" || ext === "markdown" ? "md" : "txt";
+      store.set("draft", draft.value); U.bump("file"); run(); how = "type";
+      note("Opened " + f.name + ".", "ok");
+    };
+    rd.onerror = function () { note("That file couldn't be read. Try opening it again, or paste the text.", "warn"); };
+    rd.readAsText(f);
+  });
+  function note(msg, kind) { var n = $("draft-note"); n.textContent = msg; n.className = "note " + (kind || ""); }
+
+  $("leave").value = store.get("leave", "");
+  $("quotes").checked = store.get("quotes", true);
+  $("leave").addEventListener("input", function () { store.set("leave", this.value); soon(); });
+  $("quotes").addEventListener("change", function () { store.set("quotes", this.checked); run(); });
+
+  // ------------------------------------------------------------ copy and save
+  $("b-copy").addEventListener("click", function () {
+    if (!res) return;
+    var cn = $("copy-note");
+    var done = function () { cn.textContent = "Copied"; cn.className = "note ok"; U.bump("copy"); setTimeout(function () { cn.textContent = ""; }, 2500); };
+    var fallback = function () { setTab("clean"); var r = document.createRange(); r.selectNodeContents($("proof")); var s = getSelection(); s.removeAllRanges(); s.addRange(r); cn.textContent = "Selected. Press Ctrl+C to copy."; cn.className = "note"; };
+    try { navigator.clipboard.writeText(res.after).then(done, fallback); } catch (e) { fallback(); }
+  });
+
+  function reportMd() {
+    var look = list.filter(function (i) { return i.kind !== "Swap"; });
+    var out = ["# Plain Words report", "", "Run " + new Date().toLocaleString() + " with phrase bank " + PW.VERSION + ".", "",
+      "- Words: " + res.words, "- Changed: " + res.changed, "- Changed, worth a look: " + res.checked, "- Flagged, not changed: " + res.flagged,
+      "- Stiff spots per 100 words: " + res.per100_before + " before, " + res.per100_after + " after", "", "## Look at these first", ""];
+    if (!look.length) out.push("Nothing. Every change was a safe swap.");
+    look.forEach(function (i) {
+      var c = i.context;
+      if (i.kind === "Check") out.push("- Line " + i.line + ", changed: \"" + i.before + "\" -> \"" + (i.after || "(removed)") + "\". " + (i.why || i.group));
+      else out.push("- Line " + i.line + ", flagged: \"" + c[1] + "\" in \"" + c[0] + c[1] + c[2] + "\"." + (i.after ? " Try: \"" + i.after + "\"." : "") + " " + (i.why || i.group));
+    });
+    out.push("", "## Every change", "", "| Line | Before | After | How | Why |", "| --- | --- | --- | --- | --- |");
+    var cell = function (s) { return String(s).replace(/\|/g, "\\|").replace(/\n/g, " "); };
+    list.forEach(function (i) { if (i.kind !== "Flag") out.push("| " + i.line + " | " + cell(i.before) + " | " + cell(i.after || "(removed)") + " | " + i.kind + " | " + cell(i.why || i.group) + " |"); });
+    return out.join("\n") + "\n";
+  }
+
+  function saveFile(name, data, kind) {
+    var a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([data], { type: "text/plain;charset=utf-8" })); a.download = name;
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000); U.bump(kind);
+  }
+  $("b-save").addEventListener("click", function () {
+    if (!res) return;
+    saveFile("plain-words." + fileExt, res.after, "save_copy");
+    setTimeout(function () { saveFile("plain-words-report.md", reportMd(), "save_report"); }, 400);
+  });
+  $("b-save").textContent = "Save copy and report";
+
+  function loadSample() { draft.value = SAMPLE; isSample = true; how = "sample"; run(); how = "type"; }
+
+  // ------------------------------------------------------------ start
+  $("bank-meta").textContent = PW.VERSION + " · " + BANK.rules.length + " rules";
+  var saved = store.get("draft", null);
+  if (saved && saved.trim()) { draft.value = saved; run(); } else loadSample();
+  U.start();
+  $("b-save").hidden = false;
+})();
+</script>
+</body>
+</html>
