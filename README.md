@@ -32,6 +32,20 @@ It leaves alone anything that isn't yours to rewrite: code, links, email address
 
 The proof pane shows every change marked up, a "Look at these first" list jumps to the judgment calls, and **Save copy and report** gives you the clean text plus a Markdown report of every change.
 
+## Free vs Pro
+
+| | Free (this repo) | Pro ($1/month, not open yet) |
+| --- | --- | --- |
+| Paste and clean, unlimited | Yes | Yes |
+| Marked-up proof, "Look at these first", every change | Yes | Yes |
+| Copy, save clean text and a Markdown report | Yes | Yes |
+| Word files in and out, with tracked changes | | Yes |
+| Change report as a Word document | | Yes |
+| Your own phrase bank, and a team bank | | Yes |
+| Clean a whole folder at once | | Yes |
+
+Pro features show as locked buttons on the page. See [PRO.md](PRO.md).
+
 ## Use it
 
 - **On the web:** open the [live page](https://westidwell.github.io/plain-words/).
@@ -51,14 +65,14 @@ Needs Node 18 or newer. No dependencies.
 
 ```sh
 node build.js      # folds src/ into index.html
-node test/run.js   # 30 samples must match test/expected.json
+npm test           # 30 samples must match test/expected.json, plus the Pro checks
 ```
 
 After a deliberate rule change, run `node test/run.js --update` and read the diff of `test/expected.json` before you commit it.
 
 ## Suggest a rule
 
-Found a phrase that should be on the list, or a swap that gets it wrong? [Open an issue](https://github.com/westidwell/plain-words/issues) with the phrase, what it should become, and a sentence where it shows up. Rules live in `src/bank.json`:
+See [CONTRIBUTING.md](CONTRIBUTING.md). Found a phrase that should be on the list, or a swap that gets it wrong? [Open an issue](https://github.com/westidwell/plain-words/issues) with the phrase, what it should become, and a sentence where it shows up. Rules live in `src/bank.json`:
 
 ```json
 { "type": "Word", "find": "utilize", "change_to": "use", "how": "Swap", "group": "Plain word", "why": "Plain word does the same job" }
@@ -66,7 +80,7 @@ Found a phrase that should be on the list, or a swap that gets it wrong? [Open a
 
 ## Privacy
 
-The page makes no network calls with your text. Your settings and your last draft are kept in your browser's local storage so they're there next time; **Clear** empties the draft. The page has a usage-count hook (`SITE_TRACKING_URL` in `src/page.html`) that is switched off in this repo.
+The page makes no network calls with your text. Your settings and your last draft are kept in your browser's local storage so they're there next time; **Clear** empties the draft. There's no tracking or analytics of any kind.
 
 ## License
 

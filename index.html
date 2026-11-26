@@ -60,6 +60,12 @@ button{cursor:pointer}
 .btn:hover{border-color:color-mix(in srgb,var(--accent) 60%,var(--line))}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 .btn:disabled{opacity:.5;cursor:default}
+.btn.locked{color:var(--muted);border-style:dashed}
+.btn.locked .lk{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--flag);border:1px solid color-mix(in srgb,var(--flag) 45%,transparent);border-radius:4px;padding:0 4px}
+.pro-list{margin:6px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.5}
+.pro-list b{color:var(--text,inherit);font-weight:600}
+.pro-card .pro-note{font-size:13px;color:var(--muted);margin:8px 0 0}
+.pro-card a{color:var(--accent)}
 .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--chk);border:1px solid color-mix(in srgb,var(--chk) 45%,transparent);border-radius:5px;padding:1px 6px}
 textarea#draft{flex:1;min-height:360px;resize:vertical;border:0;background:transparent;padding:16px 18px;font:16px/1.7 var(--doc);outline:none}
 textarea#draft::placeholder{color:var(--muted)}
@@ -160,6 +166,7 @@ footer a{color:var(--accent)}
         <button class="btn" id="b-open" type="button">Open file</button>
         <button class="btn" id="b-sample" type="button">Sample</button>
         <button class="btn" id="b-clear" type="button">Clear</button>
+        <button class="btn locked" id="b-pro-word" type="button" data-pro="word-files" title="Word files in and out: part of Pro">Word file <span class="lk">Pro</span></button>
         <input type="file" id="file" accept=".txt,.md,.markdown,text/plain,text/markdown" hidden>
       </div>
       <textarea id="draft" spellcheck="true" placeholder="Paste or type your draft here. An email, a proposal, a job post, a LinkedIn update."></textarea>
@@ -176,6 +183,7 @@ footer a{color:var(--accent)}
         <span class="spacer"></span>
         <button class="btn primary" id="b-copy" type="button">Copy clean text</button>
         <button class="btn" id="b-save" type="button" hidden>Save</button>
+        <button class="btn locked" id="b-pro-report" type="button" data-pro="change-report" title="Change report as a Word document: part of Pro">Word report <span class="lk">Pro</span></button>
       </div>
       <div class="proof" id="proof" aria-live="polite"></div>
       <div class="legend" id="legend">
@@ -204,6 +212,14 @@ footer a{color:var(--accent)}
         <div class="field">
           <div class="check"><input type="checkbox" id="quotes" checked><label for="quotes">Leave text inside quote marks alone<br><span class="hint">Quotes are someone else's words.</span></label></div>
         </div>
+        <div class="field">
+          <button class="btn locked" id="b-pro-bank" type="button" data-pro="own-bank">Edit the phrase bank <span class="lk">Pro</span></button>
+        </div>
+      </div>
+      <div class="card pro-card">
+        <h2>Plain Words Pro <small id="pro-price"></small></h2>
+        <ul class="pro-list" id="pro-list"></ul>
+        <p class="pro-note">Pro isn't open yet. <a id="pro-link" href="#" target="_blank" rel="noopener">See what's planned</a>, and star the repo to hear when it opens.</p>
       </div>
     </div>
   </section>
@@ -595,12 +611,64 @@ footer a{color:var(--accent)}
   else root.PlainWords = api;
 })(typeof window !== "undefined" ? window : this);
 </script>
+<script>/* Plain Words Pro: what's reserved for the Pro edition.
+ *
+ * Pro isn't open yet. Each function below names a Pro feature and returns a
+ * clear message instead of doing the work, so the free page can show the
+ * feature as locked. Pull requests that build these features will be closed
+ * with a pointer to PRO.md. Bug fixes and new free features are welcome.
+ */
+(function (root, factory) {
+  if (typeof module === "object" && module.exports) module.exports = factory();
+  else root.PlainWordsPro = factory();
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  var PRO_PRICE = "$1/month";
+  var PRO_URL = "https://github.com/westidwell/plain-words/blob/main/PRO.md";
+
+  var FEATURES = [
+    { id: "word-files", name: "Word files in and out", what: "Open a .docx and get it back cleaned, with every change as a tracked change." },
+    { id: "change-report", name: "Change report as a Word document", what: "A one-page report of every swap, check and flag, ready to send with the draft." },
+    { id: "own-bank", name: "Your own phrase bank", what: "Add your own rules, switch any rule off, and import or export the list." },
+    { id: "team-bank", name: "Team phrase bank", what: "One shared list of rules and words to leave alone for everyone on a team." },
+    { id: "batch", name: "Clean a whole folder", what: "Run every file in a folder at once and get one summary back." }
+  ];
+
+  function ProFeature(id) {
+    var f = FEATURES.filter(function (x) { return x.id === id; })[0];
+    var name = f ? f.name : "That feature";
+    this.name = "ProFeature";
+    this.feature = id;
+    this.message = name + " is part of Plain Words Pro (" + PRO_PRICE + ", not open yet): see PRO.md, " + PRO_URL;
+  }
+  ProFeature.prototype = Object.create(Error.prototype);
+  ProFeature.prototype.constructor = ProFeature;
+
+  function locked(id) { return function () { throw new ProFeature(id); }; }
+
+  return {
+    PRO_PRICE: PRO_PRICE,
+    PRO_URL: PRO_URL,
+    FEATURES: FEATURES,
+    ProFeature: ProFeature,
+    message: function (id) { return new ProFeature(id).message; },
+    /** Clean a Word file and return it with tracked changes. Pro. */
+    cleanWordFile: locked("word-files"),
+    /** Build the change report as a Word document. Pro. */
+    changeReportDocx: locked("change-report"),
+    /** Load, edit, import or export your own phrase bank. Pro. */
+    ownPhraseBank: locked("own-bank"),
+    /** Share one phrase bank across a team. Pro. */
+    teamPhraseBank: locked("team-bank"),
+    /** Clean every file in a folder at once. Pro. */
+    cleanFolder: locked("batch")
+  };
+});
+</script>
 <script>
 (function () {
   "use strict";
-  // Off. Set to a URL to receive one small record of counts per visit (never any text) via navigator.sendBeacon.
-  var SITE_TRACKING_URL = null;
-
   var PW = window.PlainWords;
   var BANK = PW.loadBank(JSON.parse(document.getElementById("bank").textContent));
   var $ = function (id) { return document.getElementById(id); };
@@ -612,29 +680,9 @@ footer a{color:var(--accent)}
 
   var text = "", res = null, list = [], tab = "marked", how = "type", isSample = false, fileExt = "txt";
 
-  // ------------------------------------------------------------ usage counts (never text; off unless SITE_TRACKING_URL is set)
-  var U = (function () {
-    var doc = { v: PW.VERSION, started: new Date().toISOString(), last: null, day: localDay(new Date()),
-      device: matchMedia("(max-width: 700px)").matches ? "phone" : "desktop",
-      counts: { open: 1, clean: 0, paste: 0, file: 0, sample: 0, copy: 0, save_copy: 0, save_report: 0, docx_try: 0 },
-      words: 0, changed: 0, checked: 0, flagged: 0, per100_before_sum: 0, per100_after_sum: 0 };
-    var dirty = true;
-    function flush() {
-      if (!SITE_TRACKING_URL || !dirty) return;
-      dirty = false; doc.last = new Date().toISOString();
-      try { navigator.sendBeacon(SITE_TRACKING_URL, JSON.stringify(doc)); } catch (e) {}
-    }
-    function bump(k) { doc.counts[k] = (doc.counts[k] || 0) + 1; dirty = true; }
-    function cleaned(r) {
-      doc.counts.clean++; doc.words += r.words; doc.changed += r.changed; doc.checked += r.checked; doc.flagged += r.flagged;
-      doc.per100_before_sum += r.per100_before; doc.per100_after_sum += r.per100_after; dirty = true;
-    }
-    function start() {
-      addEventListener("pagehide", flush);
-      document.addEventListener("visibilitychange", function () { if (document.visibilityState === "hidden") flush(); });
-    }
-    return { start: start, bump: bump, cleaned: cleaned };
-  })();
+  // ------------------------------------------------------------ no tracking
+  // This page sends nothing anywhere. These calls are kept as no-ops so a fork can add its own counts.
+  var U = { start: function () {}, bump: function () {}, cleaned: function () {} };
 
   function localDay(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 
@@ -771,7 +819,7 @@ footer a{color:var(--accent)}
     var f = this.files && this.files[0]; this.value = "";
     if (!f) return;
     var ext = (f.name.split(".").pop() || "").toLowerCase();
-    if (ext === "docx") { U.bump("docx_try"); note("Word files aren't supported here. Paste the text instead.", "warn"); return; }
+    if (ext === "docx") { note(PRO.message("word-files") + " For now, paste the text.", "warn"); return; }
     if (f.size > 5 * 1024 * 1024) { note("That file is over 5 MB. Paste the part you want cleaned.", "warn"); return; }
     var rd = new FileReader();
     rd.onload = function () {
@@ -783,6 +831,19 @@ footer a{color:var(--accent)}
     rd.readAsText(f);
   });
   function note(msg, kind) { var n = $("draft-note"); n.textContent = msg; n.className = "note " + (kind || ""); }
+
+  // ------------------------------------------------------------ Pro (locked; Pro isn't open yet)
+  var PRO = window.PlainWordsPro;
+  $("pro-price").textContent = PRO.PRO_PRICE;
+  $("pro-link").href = PRO.PRO_URL;
+  PRO.FEATURES.forEach(function (f) {
+    var li = document.createElement("li"), b = document.createElement("b");
+    b.textContent = f.name; li.appendChild(b); li.appendChild(document.createTextNode(": " + f.what));
+    $("pro-list").appendChild(li);
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-pro]"), function (btn) {
+    btn.addEventListener("click", function () { note(PRO.message(btn.getAttribute("data-pro")), "warn"); });
+  });
 
   $("leave").value = store.get("leave", "");
   $("quotes").checked = store.get("quotes", true);
